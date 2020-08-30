@@ -1,0 +1,64 @@
+@import "./../node_modules/jsoneditor/dist/jsoneditor.min.css";
+@import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre&display=swap');
+
+
+body {
+  font-family: 'Averia Sans Libre', cursive;
+}
+*{
+  margin: 0;
+  padding: 0;
+}
+.title{
+  padding: 10px;
+}
+.container{
+  box-sizing: border-box;
+  min-height: 100vh;
+  max-height: fit-content;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+.row{
+  width: 100%;
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 3px;
+}
+.editors{
+  width: 100%;
+  min-height: 100%;
+  max-height: fit-content;
+}
+.controls{
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+}
+
+.title{
+  text-align: center;
+}
+
+.btn{
+  margin: 8px;
+  border-radius: 3px;
+  background-color: wheat;
+  color: brown;
+  border: 1px solid transparent;
+  padding: 8px;
+  cursor: pointer;
+}
+.btn:active{
+  opacity: 0.5;
+}
+
+.active{
+  background-color: tomato;
+  color: aliceblue;
+}

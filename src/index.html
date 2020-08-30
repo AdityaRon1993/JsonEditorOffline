@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>JSON FORMATTER OFFLINE</title>
+    <link rel="stylesheet" href="index.css">
+    <script defer src="render.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">JSON FORMATTER OFFLINE</h1>
+      <div class="row">
+        <div id="editor" class="editors">
+    
+        </div>
+        <div class="controls">
+          <button class="btn control" button-function="left"> > </button>
+          <button class="btn" onclick="diff(event)"> DIFF </button>
+          <button class="btn control" button-function="right"> < </button>
+        </div>
+        <div id="editor2" class="editors">
+    
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
