@@ -15,7 +15,10 @@
         </div>
         <div class="controls">
           <button class="btn control" button-function="left"> > </button>
-          <button class="btn" onclick="diff(event)"> DIFF </button>
+          <button class="btn" onclick="diff(event)"> 
+            <span id="error_number"></span>
+            DIFF <span id="multiple"></span>
+          </button>
           <button class="btn control" button-function="right"> < </button>
         </div>
         <div id="editor2" class="editors">
