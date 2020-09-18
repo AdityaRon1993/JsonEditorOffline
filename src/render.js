@@ -23,7 +23,7 @@ const options = {
     search : true,
     onValidationError : function(err){
         if(err && err.length){
-            this.container.style.outline = "3px solid orangered"
+            this.container.style.outline = "3px dotted orangered"
             json_err = true;
             if(diff_on) myEmitter.emit('json_error');
         }else{
@@ -95,12 +95,19 @@ function colourEditor(editor, diffmap){
     if(editor.getMode() !="tree") {alert("FUCK YOU"); return;}
     editor.expandAll();
     const map = editor.node.childs
-    colorObject(map,diffmap)
+    if(diffmap){
+        colorObject(map,diffmap)
+    }
 }
 
 
 function colorChildren(childNode, path,color,isColorAllChild = false){
-    childNode.dom[path].style.backgroundColor = color
+    try{
+        childNode.dom[path].style.backgroundColor = color
+    }catch(e){
+        console.log(e)
+        childNode.dom["value"].style.backgroundColor = color
+    }
     if(isColorAllChild && childNode.childs && childNode.childs.length){
         childNode.childs.forEach(ele=>{
             colorChildren(ele,path,color,true)
@@ -111,7 +118,9 @@ function colorChildren(childNode, path,color,isColorAllChild = false){
 
 function colorObject(node,diffmap){
     if(typeof diffmap != "object"){
-        colorChildren(node,'tree',"pink")
+        colorChildren(node,'field',"rgba(233,87,63,.3)")
+        colorChildren(node,'value',"rgba(255,165,0,.3)")
+        return;
     }
     for(key in diffmap){
         currentData = diffmap[key]
@@ -128,19 +137,19 @@ function colorObject(node,diffmap){
             node.map(ele=>{
                 if(ele.field == key){
                     console.log("normal" ,key)
-                    colorChildren(ele,"field","pink")
+                    colorChildren(ele,"field","rgba(233,87,63,.3)")
                     if(ele.childs && ele.childs.length){
                         if(Array.isArray(currentData)){
                             const workWith = currentData.filter(ele=>ele[0]!="+")
                             workWith.forEach((arr,i)=>{
-                                if(arr[0]=='-'){
+                                if(arr[0]=='-' || arr[0]=="~"){
                                     colorObject(ele.childs[i].childs || ele.childs[i],arr[1])
                                 }
                             })
                         }
-                        colorObject(ele.childs,diffmap)
+                        colorObject(ele.childs,currentData)
                     }else{
-                        colorChildren(ele,"value","purple")
+                        colorChildren(ele,"value","rgba(255,165,0,.3)")
                     }
                 }
             })
