@@ -1,8 +1,11 @@
 const jsoneditor = require('jsoneditor')
 const jsonDiff = require('json-diff')
+const fs = require('fs')
+const path = require('path')
 let diff_on = false;
 let json_err = false
-
+const p = path.join(__dirname , "../package.json")
+const test_data = fs.readFileSync(p, 'utf-8')
 const EventEmitter = require('events');
 
 class MyEmitter extends EventEmitter {}
@@ -59,17 +62,32 @@ const controls = Array.from( document.getElementsByClassName('control') )
 controls.forEach(ele=>{
     ele.addEventListener('click',(event)=>{
         const attr = event.target.getAttribute("button-function")
-        if(attr == "left"){
-            editor_two.set(editor_one.get())
-        }
-        else{
-            editor_one.set(editor_two.get())
+        switch(attr){
+            case "left" : 
+                editor_two.set(editor_one.get());
+                break;
+            case "right" : 
+                editor_one.set(editor_two.get());
+                break;
+            case "API" : 
+                alert("JSON FROM API");
+                break;
+            default : 
+                alert("SOMETHING WENT WRONG")
+
         }
     })
 })
 
 
-
+const hide_side = function(){
+    console.log(this)
+    document.querySelector(".sidemenu").classList.toggle("hide-menu")
+    document.querySelector(".side-menu-background").classList.toggle("hide-side-menu-back")
+}
+document.getElementById('menu').addEventListener('click',hide_side)
+document.getElementById('cross').addEventListener('click',hide_side)
+document.querySelector('.side-menu-background').addEventListener('click',hide_side)
 
 
 

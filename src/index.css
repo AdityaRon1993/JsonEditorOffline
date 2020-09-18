@@ -1,18 +1,24 @@
 @import "./../node_modules/jsoneditor/dist/jsoneditor.min.css";
 @import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre&display=swap');
+@import "./../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
-
-body {
-  font-family: 'Averia Sans Libre', cursive;
-}
 *{
   margin: 0;
   padding: 0;
 }
+body {
+  font-family: 'Averia Sans Libre', cursive;
+}
+.menu{
+  position: absolute;
+  top:50%;
+  left: 0;
+  transform: translateY(-50%);
+}
 .title{
   padding: 10px;
 }
-.container{
+.container_c{
   box-sizing: border-box;
   min-height: 100vh;
   max-height: fit-content;
@@ -20,12 +26,12 @@ body {
   flex-direction: column;
   padding: 10px;
 }
-.row{
+.row_c{
   width: 100%;
   display: flex;
   flex: 1;
   align-items: stretch;
-  flex-direction: row;
+  flex-direction: row_c;
   justify-content: space-between;
   margin: 3px;
 }
@@ -45,20 +51,56 @@ body {
   text-align: center;
 }
 
-.btn{
+.btn_c{
   margin: 8px;
   border-radius: 3px;
   background-color: wheat;
-  color: brown;
+  color: brow_cn;
   border: 1px solid transparent;
   padding: 8px;
   cursor: pointer;
 }
-.btn:active{
+.btn_c:active{
   opacity: 0.5;
+}
+.accordion{
+  width: 100%;
+  margin: 0 8px;
 }
 
 .active{
   background-color: tomato;
   color: aliceblue;
+}
+.side-menu-background{
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.479);
+  z-index: 5;
+  transition: opacity 0.3s;
+}
+.hide-side-menu-back{
+  opacity: 0;
+  z-index: -1;
+}
+.sidemenu{
+  /* min-width: 250px; */
+  width: 450px ;
+  max-width: 80vw;
+  position: absolute;
+  background-color: whitesmoke;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 6;
+  transform: translateX(0px);
+  transition: 0.3s;
+
+}
+.hide-menu{
+  transform: translateX(-650px);
+}
+h2 > button {
+  text-align: center;
 }

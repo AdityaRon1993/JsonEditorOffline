@@ -7,6 +7,8 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds/mac"
@@ -17,35 +19,18 @@
     "email": "aditya.adhikari@incred.com"
   },
   "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "my_app"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
+  "build": {
+    "appId": "my.id",
+    "mac": {
+      "category": "your.app.category.type"
     }
   },
   "dependencies": {
+    "3": "^2.1.0",
+    "-": "^0.0.1",
+    "bootstrap": "^4.5.2",
     "electron-squirrel-startup": "^1.0.0",
+    "jquery": "1.9.1",
     "json-diff": "^0.5.4",
     "jsoneditor": "^9.0.4"
   },
@@ -56,6 +41,7 @@
     "@electron-forge/maker-squirrel": "6.0.0-beta.52",
     "@electron-forge/maker-zip": "6.0.0-beta.52",
     "electron": "9.2.0",
+    "electron-builder": "^22.8.1",
     "electron-installer-dmg": "^3.0.0",
     "electron-packager": "^15.1.0"
   }
