@@ -32,7 +32,9 @@
     "electron-squirrel-startup": "^1.0.0",
     "jquery": "1.9.1",
     "json-diff": "^0.5.4",
-    "jsoneditor": "^9.0.4"
+    "jsoneditor": "^9.0.4",
+    "request": "^2.34",
+    "request-promise": "^4.2.6"
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.52",

@@ -105,3 +105,33 @@ body {
 h2 > button {
   text-align: center;
 }
+.card_c{
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.125);
+  border-radius: .25rem;
+}
+.row_block {
+  display: block;
+}
+.table_key{
+  width: 150px;
+}
+.table_value{
+  min-width: 150px;
+}
+.table_delete{
+  width: 50px;
+}
+
+.action{
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+#req_body{
+  max-height: 250px;
+  margin: 0;
+  padding: 0;
+}

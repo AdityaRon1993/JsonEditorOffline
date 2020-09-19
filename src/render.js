@@ -1,5 +1,6 @@
 const jsoneditor = require('jsoneditor')
 const jsonDiff = require('json-diff')
+const api = require('request-promise')
 const fs = require('fs')
 const path = require('path')
 let diff_on = false;
@@ -7,6 +8,22 @@ let json_err = false
 const p = path.join(__dirname , "../package.json")
 const test_data = fs.readFileSync(p, 'utf-8')
 const EventEmitter = require('events');
+const headers_sample = ` <tr>
+<th scope="row" class="table_key">
+  <input class="form-control form-control-sm" type="text" placeholder="key">
+</th>
+<td class="table_value">
+  <input class="form-control form-control-sm" type="text" placeholder="value">
+</td>
+<td class="table_delete">
+  <a class="btn btn-outline-danger btn-sm" onclick="deleteRow(event)">
+    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+    </svg>
+  </a>
+</td>
+</tr>`
 
 class MyEmitter extends EventEmitter {}
 
@@ -17,6 +34,7 @@ myEmitter.on('json_error', () => {
 
 const editor1 = document.getElementById("editor")
 const editor2 = document.getElementById("editor2")
+const req_body = document.getElementById("req_body")
 const options = {
     modes : ["tree", "code", "form"], 
     mode : "code",
@@ -37,6 +55,7 @@ const options = {
 }
 const editor_one = new jsoneditor(editor1,options)
 const editor_two = new jsoneditor(editor2,options)
+const req_body_editor = new jsoneditor(req_body,options)
 
 let diff = (event)=>{
     event.target.classList.toggle("active")
@@ -156,4 +175,44 @@ function colorObject(node,diffmap){
         }
     }
 }
+
+function addMoreHeaders(){
+    console.log(
+        $("#headers_t_body tr:last").after(headers_sample)
+    )
+}
+
+function deleteRow(event){
+    if(checkForLastRow()){
+        alert("You cannot delete the last row");
+        return;
+    }
+    $(event.target).closest("tr").remove();
+}
+
+$("#MyTable").on("click", "#DeleteButton", function() {
+   $(this).closest("tr").remove();
+});
+
+function checkForLastRow(){
+    return $("#headers_t_body").children().length == 1
+}
+
+
+$("#method").on('change',function(){
+    if(this.value == "GET"){
+        $("#req_body_block").css("display","none")
+    }else{
+        $("#req_body_block").css("display","block")
+    }
+})
+
+
+function apiCall(){
+}
+
+(()=>{
+    $("#req_body_block").css("display","none")
+})()
+
 // https://github.com/josdejong/jsoneditor/issues/603
