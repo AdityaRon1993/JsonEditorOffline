@@ -6,6 +6,7 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron-forge start",
+    "start-debug": "electron-forge start --inspect-electron",
     "package": "electron-forge package",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
@@ -28,11 +29,13 @@
   "dependencies": {
     "3": "^2.1.0",
     "-": "^0.0.1",
+    "axios": "^0.20.0",
     "bootstrap": "^4.5.2",
     "electron-squirrel-startup": "^1.0.0",
     "jquery": "1.9.1",
     "json-diff": "^0.5.4",
     "jsoneditor": "^9.0.4",
+    "popper.js": "^1.16.1",
     "request": "^2.34",
     "request-promise": "^4.2.6"
   },

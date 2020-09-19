@@ -1,6 +1,6 @@
 @import "./../node_modules/jsoneditor/dist/jsoneditor.min.css";
-@import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre&display=swap');
 @import "./../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre&display=swap');
 
 *{
   margin: 0;
@@ -134,4 +134,10 @@ h2 > button {
   max-height: 250px;
   margin: 0;
   padding: 0;
+}
+
+#res_json{
+  max-width: 100%;
+  max-height: 300px;
+  overflow: auto;
 }

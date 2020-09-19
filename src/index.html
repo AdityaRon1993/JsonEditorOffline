@@ -5,6 +5,7 @@
     <title>JSON FORMATTER OFFLINE</title>
     <link rel="stylesheet" href="index.css">
     <script defer src="render.js"></script>
+    <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
     <script src="../node_modules/jquery/jquery.min.js"></script>
     <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
   </head>
@@ -33,7 +34,7 @@
                 </h2>
               </div>
           
-              <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+              <div id="collapseOne" class="collapse" aria-labelledby="headingOne">
                 <div class="card-body">
                   Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
                 </div>
@@ -47,7 +48,7 @@
                   </div>
                 </h2>
               </div>
-              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" >
                 <div class="card-body">
                   Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
                 </div>
@@ -61,7 +62,7 @@
                   </div>
                 </h2>
               </div>
-              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" >
                 <div class="card-body">
                   Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
                 </div>
@@ -113,9 +114,8 @@
           </div>
           <div class="modal-body">
             <div class="container">
-              <form>
                 <div class="row">
-                  <label for="basic-url">Your vanity URL</label>
+                  <!-- <label for="basic-url">Your vanity URL</label> -->
                   <!-- <div class="input-group mb-3">
                     <div class="input-group-prepend">
                       <span class="input-group-text" id="basic-addon3">URL</span>
@@ -125,13 +125,13 @@
                   <div class="input-group mb-3">
                     <div class="input-group-prepend">
                       <select class="form-control" id="method">
-                          <option value="GET" selected>GET</option>
-                          <option value="POST">POST</option>
-                          <option value="PUT">PUT</option>
-                          <option value="DELETE">DELETE</option>
+                          <option value="get" selected>GET</option>
+                          <option value="post">POST</option>
+                          <option value="put">PUT</option>
+                          <option value="delete">DELETE</option>
                         </select>
                     </div>
-                    <input type="text" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="method">
+                    <input type="text" class="form-control" placeholder="Request url" id="req_url" aria-label="Example text with button addon" aria-describedby="method">
                     <div class="input-group-append">
                       <a class="btn btn-success" id="api_call">
                         SEND
@@ -152,10 +152,66 @@
                     Body (JSON)
                   </button>
                   <div class="collapse" id="req_body_acordian">
-                    <div class="card">
-                      <div id="req_body">
-
+                    <div class="card card-body">
+                      <div class="dropdown mx-auto">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <span id="selected_mode"> JSON </span>
+                        </a>
+                      
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                          <!-- <a class="dropdown-item btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">JSON</a> -->
+                          <button class="dropdown-item btn btn-primary body-mode" type="button" data-toggle="collapse" data-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample2 multiCollapseExample1">JSON</button>
+                          <button class="dropdown-item btn btn-primary body-mode" type="button" data-toggle="collapse" data-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample2 multiCollapseExample1">FORM DATA</button>
+                          <!-- <button class="dropdown-item btn btn-primary" type="button" data-toggle="collapse" data-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">Toggle both elements</button> -->
+                        </div>
                       </div>
+                      <br>
+                      <div class="collapse multi-collapse show" id="multiCollapseExample1">
+                        <div id="req_data_json_editor"></div>
+                      </div>
+                      <div class="collapse multi-collapse" id="multiCollapseExample2">
+                          <table class="table table-bordered" id="req_body_table">
+                            <thead>
+                              <!-- <tr>
+                                <th scope="col" class="table_key">key</th>
+                                <th scope="col" class="table_value">value</th>
+                              </tr> -->
+                            </thead>
+                            <tbody id="req_t_body">
+                              <tr>
+                                <th scope="row" class="table_key">
+                                  <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <select class="form-control-sm" id="req_body_json" onchange="changeForm(event)">
+                                        <option value="TEXT" selected>TEXT</option>
+                                        <option value="FILE">FILE</option>
+                                      </select>
+                                    </div>
+                                    <input class="form-control form-control-sm" id="req_body_key" type="text" placeholder="key">
+                                  </div>
+    
+    
+                                  
+                                </th>
+                                <td class="table_value" id="req_body_value">
+                                  <input class="form-control form-control-sm" id="req_body_data" type="text" placeholder="value">
+                                </td>
+                                <td class="table_delete">
+                                  <a class="btn btn-outline-danger btn-sm" onclick="deleteRow(event,'req_t_body')">
+                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                    </svg>
+                                  </a>
+                                </td>
+                                </tr>
+                            </tbody>
+                          </table>
+                          <a class="btn btn-outline-success btn-block btn-sm" onclick="addMoreToTable('req_t_body')">
+                            Add +
+                          </a>
+                      </div>
+                      <hr>
                     </div>
                   </div>
                   <br>
@@ -174,7 +230,7 @@
                           value
                         </div>
                       </div> -->
-                      <table class="table table-bordered">
+                      <table class="table table-bordered" id="req_headers_table">
                         <thead>
                           <!-- <tr>
                             <th scope="col" class="table_key">key</th>
@@ -184,13 +240,13 @@
                         <tbody id="headers_t_body">
                           <tr>
                             <th scope="row" class="table_key">
-                              <input class="form-control form-control-sm" type="text" placeholder="key">
+                              <input class="form-control form-control-sm" id="header_key" type="text" placeholder="key">
                             </th>
                             <td class="table_value">
-                              <input class="form-control form-control-sm" type="text" placeholder="value">
+                              <input class="form-control form-control-sm" id="header_value" type="text" placeholder="value">
                             </td>
                             <td class="table_delete">
-                              <a class="btn btn-outline-danger btn-sm" onclick="deleteRow(event)">
+                              <a class="btn btn-outline-danger btn-sm" onclick="deleteRow(event,'headers_t_body')">
                                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                                   <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
@@ -200,7 +256,7 @@
                             </tr>
                         </tbody>
                       </table>
-                      <a class="btn btn-outline-success btn-block btn-sm" onclick="addMoreHeaders()">
+                      <a class="btn btn-outline-success btn-block btn-sm" onclick="addMoreToTable('headers_t_body')">
                         Add +
                       </a>
                       <hr>
@@ -218,7 +274,7 @@
                       <h5 class="card-header">RESPONSE</h5>
                       <div class="card-body">
                         <h5 class="card-title text-success" id="res_status" > 201</h5>
-                        <pre id="res_json">{"APPLICATION_COMPLETE_FLAG":"Yes","APPLICATION_ID":"8703174099951034A","CREATED_AT":1599904713078,"CUSTOMER":[{"APPLICANT_TYPE":"Primary","CUSTOMER_ID":"4603074099951047C"}],"EPOCH":1599904713665,"LOAN_AMOUNT":3329,"LOAN_RATE":"16.00","LOAN_SCHEME":"PL_CL","LOAN_TENURE":"3","LOAN_TYPE":"PL","PARENT_APPLICATION_ID":"5853074099951081A","PARTNER":{"active":true,"ALLOWED_URL":["/v2/partner/application/init","/v2/partner/application/init/","/v2/partner/application/init/status","/v2/partner/application/update","/v2/partner/application/update/","/v2/partner/profile/update","/v2/partner/profile/update/","/v2/partner/fileupload","/v2/partner/fileupload/","/v2/partner/sanctiondata/update","/v2/partner/sanctiondata/update/","/v2/partner/application/complete","/v2/partner/application/complete/","/v2/partner/bureau/get","/v2/partner/bureau/get/","/v2/partner/application/status/get","/v2/partner/application/status/get/","/v2/partner/application/disbursal","/v2/partner/application/disbursal/","/v2/application/reject","/v2/application/reject/","/v2/vendor/get/lms/report","/v2/vendor/get/lms/report/","/v2/partner/sanction/get","/v2/partner/sanction/get/"],"API_KEY_REQUIRED":true,"CIBIL_REQUIRED_AT_INIT":false,"CLIENT_ID":"DlRAszjVBoFp31dytVCzklNkpZwEvkYb","code":"3988945976851078P","desc":"ZestMoney","PARTNER_CONTACT_NAME":"Mandar Satpute","PARTNER_COORDINATOR":"vittal.n@incred.com","PARTNER_EMAIL":"lenderops@zestmoney.in","PARTNER_ID":"3988945976851078P","PARTNER_MOBILE":9886495758,"PARTNER_NAME":"ZestMoney","SECRETE_KEY":"mjB285BP+Nl7rE1wssy6u/z4ttWC7avZ"},"PARTNER_REFERENCE":"1226964N6G1S","PERSONNEL_ID":"lenderops@zestmoney.in","PLATFORM":"VENDOR_V2","PULL_CIBIL":"No","SANCTION_DETAIL":{"DUE_DATE":"05","LOAN_AMOUNT":3329,"LOAN_RATE":"16.00","LOAN_SCHEME":"PL_CL-317","LOAN_TENURE":"3","PROCESSING_FEE":"0"},"STATE":"WORKFLOW","STATUS":"INPROGRESS"}</pre>
+                        <pre id="res_json"></pre>
                         <a href="#" class="btn btn-primary"> < Copy to Editor 1 </a>
                         <a href="#" class="btn btn-primary">Copy to Editor 2 ></a>
                       </div>
@@ -226,7 +282,6 @@
                   </div>
                 </div>
   
-              </form>
             </div>
           </div>
           <!-- <div class="modal-footer">

@@ -1,6 +1,7 @@
 const jsoneditor = require('jsoneditor')
 const jsonDiff = require('json-diff')
-const api = require('request-promise')
+const axios = require('axios')
+const { ipcRenderer } = require('electron');
 const fs = require('fs')
 const path = require('path')
 let diff_on = false;
@@ -8,22 +9,10 @@ let json_err = false
 const p = path.join(__dirname , "../package.json")
 const test_data = fs.readFileSync(p, 'utf-8')
 const EventEmitter = require('events');
-const headers_sample = ` <tr>
-<th scope="row" class="table_key">
-  <input class="form-control form-control-sm" type="text" placeholder="key">
-</th>
-<td class="table_value">
-  <input class="form-control form-control-sm" type="text" placeholder="value">
-</td>
-<td class="table_delete">
-  <a class="btn btn-outline-danger btn-sm" onclick="deleteRow(event)">
-    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-    </svg>
-  </a>
-</td>
-</tr>`
+const headers_sample = $('#headers_t_body').html()
+let req_body_mode = "JSON"
+
+const req_sample = $('#req_t_body').html()
 
 class MyEmitter extends EventEmitter {}
 
@@ -34,7 +23,7 @@ myEmitter.on('json_error', () => {
 
 const editor1 = document.getElementById("editor")
 const editor2 = document.getElementById("editor2")
-const req_body = document.getElementById("req_body")
+const req_data_json_editor = document.getElementById("req_data_json_editor")
 const options = {
     modes : ["tree", "code", "form"], 
     mode : "code",
@@ -55,7 +44,7 @@ const options = {
 }
 const editor_one = new jsoneditor(editor1,options)
 const editor_two = new jsoneditor(editor2,options)
-const req_body_editor = new jsoneditor(req_body,options)
+const req_body_editor = new jsoneditor(req_data_json_editor,options)
 
 let diff = (event)=>{
     event.target.classList.toggle("active")
@@ -176,14 +165,19 @@ function colorObject(node,diffmap){
     }
 }
 
-function addMoreHeaders(){
-    console.log(
-        $("#headers_t_body tr:last").after(headers_sample)
-    )
+function addMoreToTable(id){
+    switch(id){
+        case "req_t_body": 
+            $(`#${id} tr:last`).after(req_sample);
+            break;
+        case "headers_t_body" : 
+            $(`#${id} tr:last`).after(headers_sample);
+            break;
+    }
 }
 
-function deleteRow(event){
-    if(checkForLastRow()){
+function deleteRow(event,id){
+    if(checkForLastRow(id)){
         alert("You cannot delete the last row");
         return;
     }
@@ -194,8 +188,8 @@ $("#MyTable").on("click", "#DeleteButton", function() {
    $(this).closest("tr").remove();
 });
 
-function checkForLastRow(){
-    return $("#headers_t_body").children().length == 1
+function checkForLastRow(id){
+    return $(`#${id}`).children().length == 1
 }
 
 
@@ -207,12 +201,105 @@ $("#method").on('change',function(){
     }
 })
 
+function changeForm(event){
+    const that = event.target
+    console.log(
+        $(that).parent().parent().parent().parent().find('td#req_body_value')
 
-function apiCall(){
+    )
+    switch(that.value){
+        case "FILE" :   $(that).parent().parent().parent().parent()
+                                .find('td#req_body_value')
+                                .html(`
+                                    <input type="file" class="form-control-file" id="req_body_data">
+                                `)
+                        break;
+        case "TEXT" :   $(that).parent().parent().parent().parent()
+                                .find('td#req_body_value')
+                                .html(`
+                                    <input class="form-control form-control-sm" id="req_body_data" type="text" placeholder="value">
+                                `)
+                        break;
+    }
 }
 
+$("#api_call").on('click',apiCall)
+async function apiCall(){
+    const url = $("#req_url").val();
+    const method = $("#method").val();
+    const req_body = req_body_mode == "JSON" ? req_body_editor.get() : getReqFormData()
+    const headers = getReqHeaderJson()
+    const options = {
+        uri : url,
+        method,
+        body : req_body,
+        headers
+    }
+    if(method == "get"){
+        delete options.body
+    }
+    if(Object.keys(headers).length == 0){
+        delete options.headers
+    }
+    const a = ipcRenderer.send('request-axios-action', options);
+}
+ipcRenderer.on('request-axios', (event, res) => {
+    if(res.status){
+        console.log(JSON.parse(res.res))
+        const local_data = JSON.parse(res.res)
+        $("#res_json").html(
+            JSON.stringify(local_data,null,"\t")
+        )
+        $("#response").addClass("show")
+    }else{
+        const local_data = JSON.parse(res)
+        $("#res_json").html(
+            JSON.stringify(local_data,null,"\t")
+        )
+        $("#response").addClass("show")
+    }
+});
 (()=>{
     $("#req_body_block").css("display","none")
 })()
 
+
+
+
+function getReqFormData(){
+    let req_body_formData = new FormData()
+    const tr = Array.from($('#req_body_table').find("#req_t_body").children())
+    tr.forEach(tr_ele=>{
+        // const inside_tr = $(tr_ele).children()
+        const isFile = $(tr_ele).find("#req_body_json").val() == "FILE" 
+        const key = $(tr_ele).find("req_body_key").val()
+        const req_body_data = isFile? $(tr_ele).find("#req_body_data")[0].files : $(tr_ele).find("#req_body_data").val()
+        req_body_formData.append(
+            `${key}${isFile?"[]":""}`,
+            req_body_data
+        )
+        console.dir(req_body_formData)
+        return req_body_formData
+    })
+}
+
+function getReqHeaderJson(){
+    let header = {}
+    const tr = Array.from($('#req_headers_table').find("#headers_t_body").children())
+    tr.forEach(tr_ele=>{
+        const header_key = $(tr_ele).find("#header_key").val()
+        const header_value = $(tr_ele).find("#header_value").val()
+        if(header_key.trim() !=""){
+            header[header_key] = header_value
+        }
+        // const inside_tr = $(tr_ele).children()
+        
+    })
+    return header
+}
+
+$(".body-mode").on('click',function(){
+    $("#selected_mode").html($(this).html())
+    req_body_mode = $(this).html()
+})
 // https://github.com/josdejong/jsoneditor/issues/603

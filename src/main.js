@@ -1,6 +1,9 @@
 const { app, Menu, BrowserWindow } = require('electron');
 const path = require('path');
+const api = require('request-promise')
 const { compileFunction } = require('vm');
+const {ipcMain} = require('electron');
+const axios = require('axios')
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -173,6 +176,52 @@ function createmenu(){
 
 }
 
+ipcMain.on('request-axios-action', (event, option) => {
+  console.log(option)
+  api(option).then(res=>{
+    const data = {
+      status : true,
+      res
+    }
+
+    event.sender.send('request-axios', data);
+  }).catch(e=>{
+    data = {
+      status : false,
+      error : e
+    }
+    event.sender.send('request-axios', data);
+    console.log(data)
+  })
+
+
+
+
+  // try{
+  //   axios(option).then(res=>{
+  //     const data = {
+  //       status : true,
+  //       res
+  //     }
+
+  //     event.sender.send('request-axios', data);
+  //   }).catch(e=>{
+  //     data = {
+  //       status : false,
+  //       error : e
+  //     }
+  //     event.sender.send('request-axios', data);
+  //     console.log(data)
+  //   });
+  // }catch(e){
+  //   data = {
+  //     status : false,
+  //     error : e
+  //   }
+  //   event.sender.send('request-axios', data);
+  //   console.log(data)
+  // }
+});
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
