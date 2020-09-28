@@ -22,8 +22,14 @@
   "license": "MIT",
   "build": {
     "appId": "my.id",
+    "productName":"JSON Offline Editor",
+    "copyright" : "Copyright © 2020 RON",
     "mac": {
-      "category": "your.app.category.type"
+      "category": "your.app.category.type",
+      "target" : "dmg"
+    },
+    "linux":{
+      "target" : "deb"
     }
   },
   "dependencies": {
