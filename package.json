@@ -29,9 +29,9 @@
   "dependencies": {
     "axios": "^0.20.0",
     "bootstrap": "^4.5.2",
+    "deep-diff": "^1.0.2",
     "electron-squirrel-startup": "^1.0.0",
     "jquery": "1.9.1",
-    "json-diff": "^0.5.4",
     "jsoneditor": "^9.0.4",
     "popper.js": "^1.16.1",
     "request": "^2.34",

@@ -4,15 +4,17 @@ const api = require('request-promise')
 const { compileFunction } = require('vm');
 const {ipcMain} = require('electron');
 const axios = require('axios')
+const { session } = require('electron')
+const fs = require("fs")
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
 }
-
+let mainWindow
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1000,
     height: 800,
     title : "JSON FORMATTER OFFLINE",
@@ -23,6 +25,8 @@ const createWindow = () => {
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  mainWindow.webContents.send('fileChanged',{event : null,filename:null})
+
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
@@ -33,7 +37,20 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', ()=>{
   createWindow();
-  createmenu()
+  createmenu();
+  
+// Modify the user agent for all requests to the following urls.
+  const filter = {
+    urls: []
+  }
+
+
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+    details.requestHeaders['User-Agent'] = 'MyAgent'
+    console.log(details.url)
+    callback({ requestHeaders: details.requestHeaders })
+  })
+
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -175,7 +192,6 @@ function createmenu(){
   Menu.setApplicationMenu(menu)
 
 }
-
 ipcMain.on('request-axios-action', (event, option) => {
   console.log(option)
   api(option).then(res=>{
@@ -194,34 +210,28 @@ ipcMain.on('request-axios-action', (event, option) => {
     console.log(data)
   })
 
-
-
-
-  // try{
-  //   axios(option).then(res=>{
-  //     const data = {
-  //       status : true,
-  //       res
-  //     }
-
-  //     event.sender.send('request-axios', data);
-  //   }).catch(e=>{
-  //     data = {
-  //       status : false,
-  //       error : e
-  //     }
-  //     event.sender.send('request-axios', data);
-  //     console.log(data)
-  //   });
-  // }catch(e){
-  //   data = {
-  //     status : false,
-  //     error : e
-  //   }
-  //   event.sender.send('request-axios', data);
-  //   console.log(data)
-  // }
 });
+
+ipcMain.on('getFilePath', (event,arg) => {
+
+
+  
+  event.sender.send('dir', {
+    dir
+  });
+});
+
+const dir = path.join(__dirname,"../documents")
+fs.watch(dir,(event,filename)=>{
+  console.log(`event - ${event}`)
+  console.log(`filename - ${filename}`)
+  mainWindow.webContents.send('fileChanged',{event,filename})
+})
+
+
+
+
+
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
