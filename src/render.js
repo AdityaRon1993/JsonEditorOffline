@@ -1,15 +1,8 @@
 const jsoneditor = require('jsoneditor')
-const axios = require('axios')
-const { ipcRenderer } = require('electron');
-const fs = require('fs')
-const path = require('path')
 let diff_on = false;
 let json_err = false
-const p = path.join(__dirname, "../package.json")
-const test_data = fs.readFileSync(p, 'utf-8')
 const EventEmitter = require('events');
 const headers_sample = $('#headers_t_body').html()
-let req_body_mode = "JSON"
 const {diff} = require('deep-diff');
 let showDiff = false;
 
@@ -172,26 +165,6 @@ $("#api_call").on('click',()=>{
     .then(response => response.json())
     .then(json => console.log(json))
 })
-ipcRenderer.on('request-axios', (event, res) => {
-    if (res.status) {
-        console.log(JSON.parse(res.res))
-        const local_data = JSON.parse(res.res)
-        $("#res_json").html(
-            JSON.stringify(local_data, null, "\t")
-        )
-        $("#response").addClass("show")
-    } else {
-        const local_data = JSON.parse(res)
-        $("#res_json").html(
-            JSON.stringify(local_data, null, "\t")
-        )
-        $("#response").addClass("show")
-    }
-});
-(() => {
-    $("#req_body_block").css("display", "none")
-})()
-
 
 
 
@@ -267,23 +240,6 @@ function mapDiff($_node, diff_path, kind) {
         }
     })
 }
-
-
-function textF(){
-
-    ipcRenderer.send('getFilePath', null)
-}
-
-
-ipcRenderer.on('dir',(event,data)=>{
-    alert(data.dir)
-    console.log(data)
-})
-
-ipcRenderer.on('fileChanged',(event,res)=>{
-    console.log(event);
-    console.log(res)
-})
 
 clearAllDiff = (node)=>{
     node.dom.tree.style.backgroundColor = "transparent"

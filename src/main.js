@@ -25,7 +25,6 @@ const createWindow = () => {
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
-  mainWindow.webContents.send('fileChanged',{event : null,filename:null})
 
 
   // Open the DevTools.
@@ -211,23 +210,6 @@ ipcMain.on('request-axios-action', (event, option) => {
   })
 
 });
-
-ipcMain.on('getFilePath', (event,arg) => {
-
-
-  
-  event.sender.send('dir', {
-    dir
-  });
-});
-
-const dir = path.join(__dirname,"../documents")
-fs.watch(dir,(event,filename)=>{
-  console.log(`event - ${event}`)
-  console.log(`filename - ${filename}`)
-  mainWindow.webContents.send('fileChanged',{event,filename})
-})
-
 
 
 
