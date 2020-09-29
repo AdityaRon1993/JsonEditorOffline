@@ -169,3 +169,21 @@ h2 > button {
   z-index: 999;
   user-select: none;
 }
+.overflow{
+  max-height: 100%;
+  overflow: auto;
+}
+.footer{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 9;
+  box-sizing: border-box;
+  /* height: 40px; */
+  background-color: rgb(56, 56, 56);
+  color: #fff;
+  width: 100%;
+  padding: 8px;
+  margin: 0;
+  text-align: center;
+}
