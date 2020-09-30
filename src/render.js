@@ -7,7 +7,7 @@ const {diff} = require('deep-diff');
 let showDiff = false;
 const { shell } = require('electron') // used in HTML
 const req_sample = $('#req_t_body').html()
-
+const {ipcRenderer} = require('electron')
 class MyEmitter extends EventEmitter { }
 
 const myEmitter = new MyEmitter();
@@ -264,6 +264,15 @@ const openInExternalBrowser = (event)=>{
         alert('cannot open ', externalUrl)
     }
 }
-
+ipcRenderer.on("GET_JSON_DATA", (event, data) => {
+    console.log(data);
+    const sendData = {
+        status : !json_err,
+        JSON_1 :  json_err || editor_one.get(),
+        JSON_2 :  json_err || editor_two.get()
+    }
+    ipcRenderer.send("SAVE_JSON_DATA", sendData)
+    
+  });
 
 // https://github.com/josdejong/jsoneditor/issues/603

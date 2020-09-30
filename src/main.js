@@ -1,16 +1,15 @@
-const { app, Menu, BrowserWindow } = require('electron');
+const { app, Menu, BrowserWindow, Tray } = require('electron');
 const path = require('path');
 const api = require('request-promise')
-const { compileFunction } = require('vm');
 const {ipcMain} = require('electron');
-const axios = require('axios')
+const { dialog } = require('electron')
 const { session } = require('electron')
 const fs = require("fs")
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
 }
+let defaultPathToSaveFiles = app.getPath('documents')
 let mainWindow
 const createWindow = () => {
   // Create the browser window.
@@ -99,6 +98,33 @@ function createmenu(){
           label : "New Window" ,
           click : ()=>{
             createWindow()
+          }
+        },
+        {
+          label : "Save",
+          accelerator : "CommandOrControl+S",
+          click : ()=>{
+            let file_name = `JFO_${Date.now()}`;
+            mainWindow.webContents.send("GET_JSON_DATA", "get JSON DATA")
+            // saveFile(`${defaultPathToSaveFiles}/${file_name}`)
+          }
+        },
+        {
+          label : "Set Defaullt",
+          accelerator : "CommandOrControl+Q",
+          click : ()=>{
+            dialog.showOpenDialog(
+              mainWindow,
+              {
+                defaultPath : defaultPathToSaveFiles,
+                buttonLabel : "Select",
+                properties : ["openDirectory","createDirectory"],
+                message : "Select Default path to store data saved by you"
+              }
+            ).then(res=>{
+              console.log(res)
+              defaultPathToSaveFiles = res.filePaths[0] || defaultPathToSaveFiles
+            })
           }
         }
       ]
@@ -202,6 +228,35 @@ ipcMain.on('request-axios-action', (event, option) => {
 
 
 
+const saveFile = (filepath)=>{
+  dialog.showSaveDialog(
+    mainWindow,
+    {
+      type : "question",
+      buttonLabel : "Save",
+      defaultPath : `${filepath}.txt`,
+      title : "Save the current JSON",
+      message : `Do you want to save this two JSONs`
+    }
+    ).then(res=>{
+      console.log(res)
+      if(res.canceled) return;
+      saveJson(res.filePath)
+      // dialog.showErrorBox('Done',JSON.stringify(res,null,"\t"))
+    }).catch(err=>{
+      
+    })
+}
+
+const saveJson = async (path)=>{
+  fs.writeFileSync(path,"TEST")
+}
+
+
+ipcMain.on("SAVE_JSON_DATA", (event, data) => {
+  console.log(data); // show the request data
+  
+});
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
