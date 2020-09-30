@@ -1,10 +1,9 @@
-const { app, Menu, BrowserWindow, Tray } = require('electron');
+const { app, Menu, BrowserWindow, Tray,ipcMain , dialog , session} = require('electron');
 const path = require('path');
 const api = require('request-promise')
-const {ipcMain} = require('electron');
-const { dialog } = require('electron')
-const { session } = require('electron')
 const fs = require("fs")
+const change_log = require("./changeLog/change_log.json")
+console.log(change_log)
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
