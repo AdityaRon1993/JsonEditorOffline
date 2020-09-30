@@ -104,9 +104,7 @@ function createmenu(){
           label : "Save",
           accelerator : "CommandOrControl+S",
           click : ()=>{
-            let file_name = `JFO_${Date.now()}`;
             mainWindow.webContents.send("GET_JSON_DATA", "get JSON DATA")
-            // saveFile(`${defaultPathToSaveFiles}/${file_name}`)
           }
         },
         {
@@ -228,33 +226,49 @@ ipcMain.on('request-axios-action', (event, option) => {
 
 
 
-const saveFile = (filepath)=>{
+const saveFile = (filepath,data)=>{
   dialog.showSaveDialog(
     mainWindow,
     {
       type : "question",
       buttonLabel : "Save",
-      defaultPath : `${filepath}.txt`,
+      defaultPath : `${filepath}.json`,
       title : "Save the current JSON",
       message : `Do you want to save this two JSONs`
     }
     ).then(res=>{
       console.log(res)
       if(res.canceled) return;
-      saveJson(res.filePath)
+      saveJson(res.filePath,data)
+      console.log(res.filePath,data)
       // dialog.showErrorBox('Done',JSON.stringify(res,null,"\t"))
     }).catch(err=>{
       
     })
 }
 
-const saveJson = async (path)=>{
-  fs.writeFileSync(path,"TEST")
+const saveJson = async (path,data)=>{
+  try{
+    path = path.split('.').pop() != 'json' ? path + '.json' : path;
+
+    fs.writeFileSync(path,JSON.stringify(data,null,"\t"))
+    dialog.showMessageBox(mainWindow,{
+      type : "info",
+      buttons : ["OK"],
+      message : `File is saved \n${path}`
+    })
+  }catch(e){
+      dialog.showErrorBox('Error',`Error is saving file \n${path}`)
+  }
 }
 
 
 ipcMain.on("SAVE_JSON_DATA", (event, data) => {
-  console.log(data); // show the request data
+  console.log(data);
+  let file_name = `JFO_${Date.now()}`;
+  // dialog.showErrorBox('Done',JSON.stringify(data,null,"\t"))
+
+  saveFile(`${defaultPathToSaveFiles}/${file_name}`,data) // show the request data
   
 });
 
