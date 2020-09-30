@@ -187,3 +187,12 @@ h2 > button {
   margin: 0;
   text-align: center;
 }
+.footer > span {
+  margin: 8px;
+}
+.button{
+  cursor: pointer;
+}
+.stike_throught{
+  text-decoration: line-through;
+}

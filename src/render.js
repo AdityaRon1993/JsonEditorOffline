@@ -5,7 +5,7 @@ const EventEmitter = require('events');
 const headers_sample = $('#headers_t_body').html()
 const {diff} = require('deep-diff');
 let showDiff = false;
-
+const { shell } = require('electron') // used in HTML
 const req_sample = $('#req_t_body').html()
 
 class MyEmitter extends EventEmitter { }
@@ -250,5 +250,20 @@ clearAllDiff = (node)=>{
         })
     }
 }
+
+const version = require('electron').remote.app.getVersion();
+$("#version").html(version)
+
+const openInExternalBrowser = (event)=>{
+    event.preventDefault();
+    let externalUrl = event.target.href
+    
+    try{
+        shell.openExternal(externalUrl)
+    }catch(e){
+        alert('cannot open ', externalUrl)
+    }
+}
+
 
 // https://github.com/josdejong/jsoneditor/issues/603
