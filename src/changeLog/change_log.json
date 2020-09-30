@@ -1,1 +1,61 @@
-[{"version":"1.0.0","changes":["Two editors online","Editors light up with red when error occurs","tree and code modes are supported","left to right and right to left copy enabled","side menu setup ( NOT FUNCTIONAL )","main setup","Diff between JSONs calculated ( MAPPING THEMM ON THE EDITOR FAILED )"],"future":["DIFF between json to be displayed","Getting data as json from API","Save editor data and its comparison and history"],"dropped":["MORE THEN 2 editor support dropped"]},{"version":"1.0.1","changes":["Difference Mapping successfull","About Page and footer in sidemenu added","access to change log added with more descriptions in about page"],"future":["Getting data as json from API","Save editor data and its comparison and history","change log ui to be setted up"],"dropped":["Api is disabled for now.. Need more time for that"]},{"version":"1.0.2","changes":["Save option added","Select default location is added in the menu, Though this functionality will be changed in future","data is saved my default in \"DOCUMENTS\" Folder of any operating system","Getting data from RENDER to MAIN and saving it","ALL data is now saved as JSON and file name is changed if not","file name is auto generated with epoch"],"future":["Getting data as json from API","Use Saved Data in UI","Implement default folder in a better way","save individual data should be implemented","IMPORT json from file can also be implemented"],"dropped":["JSON history"]}]
+[
+    {
+      "version": "1.0.0",
+      "changes": [
+        "Two editors online",
+        "Editors light up with red when error occurs",
+        "tree and code modes are supported",
+        "left to right and right to left copy enabled",
+        "side menu setup ( NOT FUNCTIONAL )",
+        "main setup",
+        "Diff between JSONs calculated ( MAPPING THEMM ON THE EDITOR FAILED )"
+      ],
+      "future": [
+        "DIFF between json to be displayed",
+        "Getting data as json from API",
+        "Save editor data and its comparison and history"
+      ],
+      "dropped": [
+        "MORE THEN 2 editor support dropped"
+      ]
+    },
+    {
+      "version": "1.0.1",
+      "changes": [
+        "Difference Mapping successfull",
+        "About Page and footer in sidemenu added",
+        "access to change log added with more descriptions in about page"
+      ],
+      "future": [
+        "Getting data as json from API",
+        "Save editor data and its comparison and history",
+        "change log ui to be setted up"
+      ],
+      "dropped": [
+        "Api is disabled for now.. Need more time for that"
+      ]
+    },
+    {
+      "version": "1.0.2",
+      "changes": [
+        "Save option added",
+        "Select default location is added in the menu, Though this functionality will be changed in future",
+        "data is saved my default in \"DOCUMENTS\" Folder of any operating system",
+        "Getting data from RENDER to MAIN and saving it",
+        "ALL data is now saved as JSON and file name is changed if not",
+        "file name is auto generated with epoch",
+        "change log and saved data to be encripted"
+      ],
+      "future": [
+        "Getting data as json from API",
+        "Use Saved Data in UI",
+        "Implement default folder in a better way",
+        "save individual data should be implemented",
+        "IMPORT json from file can also be implemented",
+        "JSON diff bug to be fixed - \" If editor is null and diff returns undefined \" "
+      ],
+      "dropped": [
+        "JSON history"
+      ]
+    }
+  ]
