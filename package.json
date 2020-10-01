@@ -28,9 +28,9 @@
       "category": "your.app.category.type",
       "target": "dmg"
     },
-    "win":{
-      "target" : "msi"
-    }, 
+    "win": {
+      "target": "msi"
+    },
     "linux": {
       "target": "deb"
     }

@@ -250,6 +250,12 @@ clearAllDiff = (node)=>{
         })
     }
 }
+const openChangeLog = (event)=>{
+    event.preventDefault()
+    ipcRenderer.invoke('OPEN_CHANGE_LOG',null).then(res=>{
+        console.log(res)
+    })
+}
 
 const version = require('electron').remote.app.getVersion();
 $("#version").html(version)

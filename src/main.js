@@ -3,13 +3,13 @@ const path = require('path');
 const api = require('request-promise')
 const fs = require("fs")
 const change_log = require("./changeLog/change_log.json")
-console.log(change_log)
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
 }
 let defaultPathToSaveFiles = app.getPath('documents')
 let mainWindow
+let childWindow = null
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -35,18 +35,26 @@ const createWindow = () => {
 app.on('ready', ()=>{
   createWindow();
   createmenu();
-  
+  setTimeout(()=>{
+    api('https://jsonplaceholder.typicode.com/todos/1').then(res=>{
+      console.log("JSON PLACE HOLDER");
+      console.log(res)
+    })
+  },3000)
 // Modify the user agent for all requests to the following urls.
   const filter = {
     urls: []
   }
 
 
-  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
-    details.requestHeaders['User-Agent'] = 'MyAgent'
-    console.log(details.url)
-    callback({ requestHeaders: details.requestHeaders })
-  })
+  // session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+  //   // details.requestHeaders['User-Agent'] = 'MyAgent'
+  //   // console.log("*****")
+  //   // console.log(details.requestHeaders.Origin || "NO ORIGIN")
+  //   // console.log(details.url)
+  //   // console.log("*****")
+  //   callback({ requestHeaders: details.requestHeaders })
+  // })
 
 });
 
@@ -55,6 +63,8 @@ app.on('ready', ()=>{
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    mainWindow = null,
+    childWindow = null
     app.quit();
   }
 });
@@ -95,6 +105,7 @@ function createmenu(){
         isMac ? { role: 'close' } : { role: 'quit' } ,
         {
           label : "New Window" ,
+          accelerator : "CommandOrControl+N",
           click : ()=>{
             createWindow()
           }
@@ -270,6 +281,57 @@ ipcMain.on("SAVE_JSON_DATA", (event, data) => {
   saveFile(`${defaultPathToSaveFiles}/${file_name}`,data) // show the request data
   
 });
+
+
+
+
+//open changeLog
+
+ipcMain.handle("OPEN_CHANGE_LOG",()=>{
+  try{
+    if(!childWindow){
+      childWindow = new BrowserWindow({
+        width: 600,
+        height: 700,
+        title : "CHANGE LOG",
+        backgroundColor : "#ffffff",
+        parent : mainWindow,
+        modal:true,
+        resizable : false,
+        webPreferences : {
+          nodeIntegration : true
+        }
+      });
+    
+      // and load the index.html of the app.
+      childWindow.loadFile(path.join(__dirname, '/changeLog/change_log.html'));
+      return { status : true , msg : "window created"}
+    }else{
+      childWindow.focus()
+    }
+  }catch(e){
+    return { status : false , err : e}
+  }
+  
+})
+
+//close childWindow
+ipcMain.handle("CLOSE_CHANGEL_LOG",()=>{
+  try{
+    childWindow.close();
+    childWindow = null;
+    console.log("child window closed")
+    // return { status : true , }
+  }
+  catch(e){
+    console.log("child window close error")
+
+    return { status : false , err : e}
+  }
+})
+ipcMain.handle("GET_CHANGEL_LOG_DATA",()=>{
+  return [...change_log]
+})
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
