@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="../../node_modules/jquery/jquery.min.js"></script>
+    <script src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <style>
+        @import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+        @import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre&display=swap');
+
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Averia Sans Libre', cursive;
+
+        }
+
+        .full {
+            height: 100vh;
+            /* background-color: aqua; */
+            margin: 0;
+            padding: 8px 16px;
+            margin-bottom: 30px;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: flex-end;
+            padding: 8px 16px;
+            background-color: #f8f9fa;
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="full">
+        <div>
+            <ul class="list-unstyled" id="change_log">
+                
+            </ul>
+        </div>
+
+
+        <div class="footer border">
+            <button class="btn btn-dark" id="close"> Close </button>
+        </div>
+    </div>
+
+
+    <script src="./change_log.js"></script>
+</body>
+
+</html>
