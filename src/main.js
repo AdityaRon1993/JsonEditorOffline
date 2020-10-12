@@ -2,7 +2,8 @@ const { app, Menu, BrowserWindow, Tray,ipcMain , dialog , session} = require('el
 const path = require('path');
 const api = require('request-promise')
 const fs = require("fs")
-const change_log = require("./changeLog/change_log.json")
+const change_log = require("./changeLog/change_log.json");
+const user_data_path = path.join(__dirname,"assets","user_data.json")
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
@@ -110,24 +111,6 @@ function createmenu(){
           click : ()=>{
             mainWindow.webContents.send("GET_JSON_DATA", "get JSON DATA")
           }
-        },
-        {
-          label : "Set Defaullt",
-          accelerator : "CommandOrControl+Q",
-          click : ()=>{
-            dialog.showOpenDialog(
-              mainWindow,
-              {
-                defaultPath : defaultPathToSaveFiles,
-                buttonLabel : "Select",
-                properties : ["openDirectory","createDirectory"],
-                message : "Select Default path to store data saved by you"
-              }
-            ).then(res=>{
-              console.log(res)
-              defaultPathToSaveFiles = res.filePaths[0] || defaultPathToSaveFiles
-            })
-          }
         }
       ]
     },
@@ -207,80 +190,56 @@ function createmenu(){
   Menu.setApplicationMenu(menu)
 
 }
-ipcMain.on('request-axios-action', (event, option) => {
-  console.log(option)
-  api(option).then(res=>{
-    const data = {
-      status : true,
-      res
-    }
-
-    event.sender.send('request-axios', data);
-  }).catch(e=>{
-    data = {
-      status : false,
-      error : e
-    }
-    event.sender.send('request-axios', data);
-    console.log(data)
-  })
-
-});
 
 
+// ipcMain.on("SAVE_JSON_DATA", (event, data) => {
+//   console.log(data);
+// });
 
-
-const saveFile = (filepath,data)=>{
-  dialog.showSaveDialog(
-    mainWindow,
-    {
-      type : "question",
-      buttonLabel : "Save",
-      defaultPath : `${filepath}.json`,
-      title : "Save the current JSON",
-      message : `Do you want to save this two JSONs`
-    }
-    ).then(res=>{
-      console.log(res)
-      if(res.canceled) return;
-      saveJson(res.filePath,data)
-      console.log(res.filePath,data)
-      // dialog.showErrorBox('Done',JSON.stringify(res,null,"\t"))
-    }).catch(err=>{
-      
-    })
-}
-
-const saveJson = async (path,data)=>{
+ipcMain.handle('SAVE_JSON_DATA', async (event, args) => {
+  console.log(args)
+  let user_data
   try{
-    path = path.split('.').pop() != 'json' ? path + '.json' : path;
-
-    fs.writeFileSync(path,JSON.stringify(data,null,"\t"))
-    dialog.showMessageBox(mainWindow,{
-      type : "info",
-      buttons : ["OK"],
-      message : `File is saved \n${path}`
-    })
+    user_data= JSON.parse(await getUserData());
+    console.log(user_data)
+    if(args.single_json){
+      user_data.single_json.push(args.data)
+    }else{
+      user_data.multiple_json.push(args.data)
+    }
+    const succ = await writeUserData(JSON.stringify(user_data))
+    console.log(succ)
   }catch(e){
-      dialog.showErrorBox('Error',`Error is saving file \n${path}`)
+    console.log(e)
   }
+  return "done"
+})
+
+function getUserData(){
+  return new Promise((resolve,reject)=>{
+    console.log(user_data_path)
+    fs.readFile(user_data_path,"utf8",(err,data)=>{
+      if(err) reject("unable to read file");
+      resolve(data)
+    })
+  })
 }
-
-
-ipcMain.on("SAVE_JSON_DATA", (event, data) => {
-  console.log(data);
-  let file_name = `JFO_${Date.now()}`;
-  // dialog.showErrorBox('Done',JSON.stringify(data,null,"\t"))
-
-  saveFile(`${defaultPathToSaveFiles}/${file_name}`,data) // show the request data
-  
-});
-
-
-
-
+function writeUserData(data){
+  return new Promise((resolve,reject)=>{
+    console.log(user_data_path)
+    fs.writeFile(user_data_path,data,(err,data)=>{
+      if(err) reject("unable to read file");
+      resolve("success")
+    })
+  })
+}
 //open changeLog
 
+
+ipcMain.handle("GET_SAVED_DATA", async(event)=>{
+  const user_data = JSON.parse(await getUserData());
+  return user_data
+})
 ipcMain.handle("OPEN_CHANGE_LOG",()=>{
   try{
     if(!childWindow){

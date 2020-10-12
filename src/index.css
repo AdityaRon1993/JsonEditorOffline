@@ -39,7 +39,12 @@ body {
 .editors{
   width: 100%;
   flex : 1 1;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
+}
+.editor_c{
+  flex : 1 1;
 }
 .controls{
   display: flex;
