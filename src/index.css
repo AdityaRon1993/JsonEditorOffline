@@ -196,3 +196,12 @@ h2 > button {
 .stike_throught{
   text-decoration: line-through;
 }
+.data_share{
+  width: 100%;
+  word-wrap: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.share{
+  border: 1px solid transparent;
+}
