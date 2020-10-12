@@ -5,11 +5,17 @@ const EventEmitter = require('events');
 const headers_sample = $('#headers_t_body').html()
 const {diff} = require('deep-diff');
 let showDiff = false;
-const { shell } = require('electron') // used in HTML
+const { shell, ipcMain } = require('electron') // used in HTML
 const req_sample = $('#req_t_body').html()
 const {ipcRenderer} = require('electron')
 class MyEmitter extends EventEmitter { }
 const { clipboard } = require('electron')
+
+
+let user_data = null;
+getuserData().then(res=>{
+    console.log(res)
+})
 
 
 const myEmitter = new MyEmitter();
@@ -25,12 +31,12 @@ const options = {
     mode: "code",
     onValidationError: function (err) {
         if (err && err.length) {
-            this.container.style.outline = "3px dotted orangered"
+            this.container.style.border = "3px dotted orangered"
             json_err = true;
             if (diff_on) myEmitter.emit('json_error');
         } else {
             json_err = false
-            this.container.style.outline = "transparent"
+            this.container.style.border = "transparent"
         }
     },
     onModeChange: (mode) => {
@@ -313,17 +319,195 @@ const openInExternalBrowser = (event)=>{
 }
 ipcRenderer.on("GET_JSON_DATA", (event, data) => {
     console.log(data);
-    const sendData = {
-        status : !json_err,
-        JSON_1 :  json_err || editor_one.get(),
-        JSON_2 :  json_err || editor_two.get()
+    if(json_err) { alert("!! JSON has error !!\n!! Please resolve the error !!"); return;}
+    const editor_name_one = $("#editor_name_one").val().trim();
+    const editor_name_two = $("#editor_name_two").val().trim();
+    if(editor_name_one == "" || editor_name_one.length == 0 || editor_name_two == "" || editor_name_two.length == 0){
+        alert("Name for editor one and two are compulsory")
     }
-    ipcRenderer.send("SAVE_JSON_DATA", sendData)
-    
+    const sendData = {
+        id : Date.now(),
+        single_json: false,
+        data : [
+            {
+                editor : "1",
+                name : $("#editor_name_one").val(),
+                json : editor_one.get()
+            },
+            {
+                editor : "2",
+                name : $("#editor_name_two").val(),
+                json : editor_two.get()
+            }
+        ]
+
+    }
+     save_json_to_file(sendData)
   });
 
 
+const save_json = Array.from(document.querySelectorAll("#save_json"))
+save_json.forEach(ele=>{
+    $(ele).on("click",function(){
+        const name = $(this).parent().parent().find(".editor_name").val().trim()
+        const attr = $(this).parent().parent().find(".editor_name").attr("data-editor")
+        let json = null;
+        if(name == "" || name.length == 0) {
+            alert("Name is needed")
+            return;
+        }
+        if(json_err){ alert("!! JSON has error !!\n!! Please resolve the error !!"); return;}
+        switch(attr){
+            case "1" : 
+                json = editor_one.get(); 
+                break;
+            case "2" : 
+                json = editor_two.get();
+                break;
+        } 
+        const param = {
+            id : Date.now(),
+            single_json: true,
+            data : [
+                {
+                    editor : attr,
+                    name,
+                    json
+                }
+            ]
 
+        }
+        save_json_to_file(param)
+
+    })
+})
+
+async function save_json_to_file(data){
+    const res = await ipcRenderer.invoke("SAVE_JSON_DATA", data);
+    const user_data = await getuserData()
+    console.log(user_data)
+}
+
+
+async function getuserData (){
+    Array.from(document.querySelectorAll("#share")).forEach(ele=>{
+        $(ele).off()
+    })
+    Array.from(document.querySelectorAll("#show")).forEach(ele=>{
+        $(ele).off()
+    })
+    const res = await ipcRenderer.invoke("GET_SAVED_DATA");
+    user_data = res
+    renderSingle(res.single_json)
+    renderMultiple(res.multiple_json)
+    Array.from(document.querySelectorAll("#share")).forEach(ele=>{
+        $(ele).on('click',function(){
+            console.log("share")
+        })
+    })
+    Array.from(document.querySelectorAll("#show")).forEach(ele=>{
+        $(ele).on('click',function(){
+            console.log("show")
+        })
+    })
+    return res
+}
+function renderSingle(data){
+    const tr = []
+
+    data.forEach((ele, i)=>{
+        tr.push(`
+            <tr>
+                <td scope="row">${i+1}</td>
+                <td> ${ele[0].name} </td>
+                <td> 
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="show" data-type="single" data-index="${i}" data-work="show"  >
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-bar-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8zm-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5z"/>
+                        </svg>
+                    </button> 
+                </td>
+                <td>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="share" data-type="single" data-index="${i}" data-work="share"  >
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-share-fill" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                            d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z" />
+                        </svg>
+                    </button> 
+                </td>
+            </tr>
+        `)
+    })
+
+
+    $(".single").html(`
+    <table class="table table-sm">
+    <thead>
+        <th scope="col">#</th>
+        <th scope="col">Editor Name</th>
+        <th scope="col" colspan=2>Action</th>
+    </thead>
+    <tbody>
+      ${tr.join('')}
+    </tbody>
+  </table>
+    `)
+
+}
+function renderMultiple(data){
+    const tr = []
+
+    data.forEach((ele, i)=>{
+        tr.push(`
+            <tr>
+                <td scope="row">${i+1}</td>
+                <td> ${ele[0].name} </td>
+                <td> ${ele[1].name} </td>
+                <td> 
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="show" data-type="multiple" data-index="${i}" data-work="show"  >
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-bar-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8zm-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5z"/>
+                        </svg>
+                    </button> 
+                </td>
+                <td>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="share" data-type="multiple" data-index="${i}" data-work="share"  >
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-share-fill" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                            d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z" />
+                        </svg>
+                    </button> 
+                </td>
+            </tr>
+        `)
+    })
+
+
+    $(".multiple").html(`
+    <table class="table table-sm">
+    <thead>
+        <th scope="col">#</th>
+        <th scope="col">Editor 1</th>
+        <th scope="col">Editor 2</th>
+        <th scope="col" colspan=2>Action</th>
+    </thead>
+    <tbody>
+      ${tr.join('')}
+    </tbody>
+  </table>
+    `)
+}
+
+function showData(event){
+    console.log(event.target)
+
+}
+function shareData(event){
+    console.log(event.target)
+
+}
 
 
 function copyToClipboard(elem) {
