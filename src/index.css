@@ -210,3 +210,7 @@ h2 > button {
 .share{
   border: 1px solid transparent;
 }
+
+td,th{
+  text-align: center;
+}
