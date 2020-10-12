@@ -9,6 +9,8 @@ const { shell } = require('electron') // used in HTML
 const req_sample = $('#req_t_body').html()
 const {ipcRenderer} = require('electron')
 class MyEmitter extends EventEmitter { }
+const { clipboard } = require('electron')
+
 
 const myEmitter = new MyEmitter();
 myEmitter.on('json_error', () => {
@@ -17,7 +19,7 @@ myEmitter.on('json_error', () => {
 
 const editor1 = document.getElementById("editor")
 const editor2 = document.getElementById("editor2")
-const req_data_json_editor = document.getElementById("req_data_json_editor")
+// const req_data_json_editor = document.getElementById("req_data_json_editor")
 const options = {
     modes: ["tree", "code"],
     mode: "code",
@@ -44,7 +46,7 @@ const options = {
 }
 const editor_one = new jsoneditor(editor1, options)
 const editor_two = new jsoneditor(editor2, options)
-const req_body_editor = new jsoneditor(req_data_json_editor, options)
+// const req_body_editor = new jsoneditor(req_data_json_editor, options)
 
 let diffE = (event) => {
     showDiff = !showDiff
@@ -74,8 +76,9 @@ let getDiff = ()=>{
 const controls = Array.from(document.getElementsByClassName('control'))
 
 controls.forEach(ele => {
-    ele.addEventListener('click', (event) => {
-        const attr = event.target.getAttribute("button-function")
+    ele.addEventListener('click', function(event) {
+        console.log(this)
+        const attr = this.getAttribute("button-function")
         switch (attr) {
             case "left":
                 editor_two.set(editor_one.get());
@@ -83,8 +86,46 @@ controls.forEach(ele => {
             case "right":
                 editor_one.set(editor_two.get());
                 break;
-            case "API":
-                alert("JSON FROM API");
+            case "share":
+                (async()=>{
+                    if(json_err) {alert('there is an error in any of the JSONs'); return}
+                    const data_arg = {
+                        editor_one : { name : "one" ,data : editor_one.get()},
+                        editor_two : { name : "two" ,data : editor_two.get()}
+                    }
+                    const share_data = await ipcRenderer.invoke('get_sharable_data',data_arg)
+                    $("#data_share").html(share_data)
+                    $('#share_data').modal('show')
+                })()
+                break;
+            case "import":
+                (async()=>{
+                    const data = $("#import_text").val().trim()
+                    console.log(data)
+                    if(data == "") { alert("Please Enter some data"); return;}
+                    const share_data = await ipcRenderer.invoke('get_decrypted_data',data)
+                    if(share_data.status){
+                        editor_one.set(share_data.json.editor_one.data)
+                        editor_two.set(share_data.json.editor_two.data)
+                        $("#import_text").val('');
+                        $('#import').modal('hide')
+                    }else{
+                        alert(share_data.msg)
+                    }
+                    console.log(share_data)
+                })()
+                break;
+            case "download":
+                    $('#import').modal('show')
+                    
+                break;
+            case "diff":
+                diffE(this)
+                break;
+            case "copy":
+                const success = copyToClipboard("#data_share")
+                if(success) {return}
+                alert("Failed to copy")
                 break;
             default:
                 alert("SOMETHING WENT WRONG")
@@ -280,5 +321,17 @@ ipcRenderer.on("GET_JSON_DATA", (event, data) => {
     ipcRenderer.send("SAVE_JSON_DATA", sendData)
     
   });
+
+
+
+
+
+function copyToClipboard(elem) {
+    
+    const cp = $(elem).text()
+    clipboard.writeText(cp)
+
+    return true
+}
 
 // https://github.com/josdejong/jsoneditor/issues/603

@@ -94,10 +94,10 @@
       </div>
       <div class="footer">
         <div>
-          created by <i> RON </i> 
+          created by <i> RON </i>
           <span type="button" data-toggle="modal" data-target="#about_me">
-            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-question-circle-fill"
-              fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-question-circle-fill" fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd"
                 d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033a.237.237 0 0 1-.24-.247C5.35 4.091 6.737 3.5 8.005 3.5c1.396 0 2.672.73 2.672 2.24 0 1.08-.635 1.594-1.244 2.057-.737.559-1.01.768-1.01 1.486v.105a.25.25 0 0 1-.25.25h-.81a.25.25 0 0 1-.25-.246l-.004-.217c-.038-.927.495-1.498 1.168-1.987.59-.444.965-.736.965-1.371 0-.825-.628-1.168-1.314-1.168-.803 0-1.253.478-1.342 1.134-.018.137-.128.25-.266.25h-.825zm2.325 6.443c-.584 0-1.009-.394-1.009-.927 0-.552.425-.94 1.01-.94.609 0 1.028.388 1.028.94 0 .533-.42.927-1.029.927z" />
             </svg>
@@ -135,229 +135,96 @@
 
       </div>
       <div class="controls">
-        <button class="btn_c" type="button" button-function="API" data-toggle="modal" data-target="#staticBackdrop"> API
+        <button class="btn_c control" button-function="share">
+          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-share-fill" fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z" />
+          </svg>
         </button>
         <button class="btn_c control" button-function="left"> > </button>
-        <button class="btn_c" onclick="diffE(event)">
+        <button class="btn_c control" button-function="diff">
           <span id="error_number"></span>
           DIFF <span id="multiple"></span>
         </button>
         <button class="btn_c control" button-function="right">
-          < </button>
+          < 
+        </button>
+        <button class="btn_c control" button-function="download">
+          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-download" fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+            <path fill-rule="evenodd"
+              d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+          </svg>
+        </button>
       </div>
       <div id="editor2" class="editors">
 
       </div>
     </div>
   </div>
-  <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+  <div class="modal fade" id="share_data" data-backdrop="static" data-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">JSON from API</h5>
+          <h5 class="modal-title" id="staticBackdropLabel">Copy the text to share the current json setup</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="disabled_api">
-            <img src="./../assets/img/disabled.png" alt="">
-          </div>
+          <div class="continer">
+            <p class="data_share" id="data_share">
 
-          <div class="container">
-            <div class="row">
-              <!-- <label for="basic-url">Your vanity URL</label> -->
-              <!-- <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text" id="basic-addon3">URL</span>
-                    </div>
-                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
-                  </div> -->
-              <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                  <select class="form-control" id="method">
-                    <option value="get" selected>GET</option>
-                    <option value="post">POST</option>
-                    <option value="put">PUT</option>
-                    <option value="delete">DELETE</option>
-                  </select>
-                </div>
-                <input type="text" class="form-control" placeholder="Request url" id="req_url"
-                  aria-label="Example text with button addon" aria-describedby="method">
-                <div class="input-group-append">
-                  <a class="btn btn-success" id="api_call">
-                    SEND
-                  </a>
-                </div>
-              </div>
-              <!-- <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">
-                        
-                      </div>
-                    </div>
-                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
-                  </div> -->
-            </div>
-            <div class="row row_block" id="req_body_block">
-              <button class="btn btn-primary btn-block btn-sm" data-toggle="collapse" href="#req_body_acordian"
-                type="button" aria-expanded="false" aria-controls="req_body_acordian">
-                Body (JSON)
-              </button>
-              <div class="collapse" id="req_body_acordian">
-                <div class="card card-body">
-                  <div class="dropdown mx-auto">
-                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <span id="selected_mode"> JSON </span>
-                    </a>
-
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                      <!-- <a class="dropdown-item btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">JSON</a> -->
-                      <button class="dropdown-item btn btn-primary body-mode" type="button" data-toggle="collapse"
-                        data-target=".multi-collapse" aria-expanded="false"
-                        aria-controls="multiCollapseExample2 multiCollapseExample1">JSON</button>
-                      <button class="dropdown-item btn btn-primary body-mode" type="button" data-toggle="collapse"
-                        data-target=".multi-collapse" aria-expanded="false"
-                        aria-controls="multiCollapseExample2 multiCollapseExample1">FORM DATA</button>
-                      <!-- <button class="dropdown-item btn btn-primary" type="button" data-toggle="collapse" data-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">Toggle both elements</button> -->
-                    </div>
-                  </div>
-                  <br>
-                  <div class="collapse multi-collapse show" id="multiCollapseExample1">
-                    <div id="req_data_json_editor"></div>
-                  </div>
-                  <div class="collapse multi-collapse" id="multiCollapseExample2">
-                    <table class="table table-bordered" id="req_body_table">
-                      <thead>
-                        <!-- <tr>
-                                <th scope="col" class="table_key">key</th>
-                                <th scope="col" class="table_value">value</th>
-                              </tr> -->
-                      </thead>
-                      <tbody id="req_t_body">
-                        <tr>
-                          <th scope="row" class="table_key">
-                            <div class="input-group mb-3">
-                              <div class="input-group-prepend">
-                                <select class="form-control-sm" id="req_body_json" onchange="changeForm(event)">
-                                  <option value="TEXT" selected>TEXT</option>
-                                  <option value="FILE">FILE</option>
-                                </select>
-                              </div>
-                              <input class="form-control form-control-sm" id="req_body_key" type="text"
-                                placeholder="key">
-                            </div>
-
-
-
-                          </th>
-                          <td class="table_value" id="req_body_value">
-                            <input class="form-control form-control-sm" id="req_body_data" type="text"
-                              placeholder="value">
-                          </td>
-                          <td class="table_delete">
-                            <a class="btn btn-outline-danger btn-sm" onclick="deleteRow(event,'req_t_body')">
-                              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                  d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                                <path fill-rule="evenodd"
-                                  d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                              </svg>
-                            </a>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <a class="btn btn-outline-success btn-block btn-sm" onclick="addMoreToTable('req_t_body')">
-                      Add +
-                    </a>
-                  </div>
-                  <hr>
-                </div>
-              </div>
-              <br>
-            </div>
-            <div class="row row_block">
-              <button class="btn btn-primary btn-block btn-sm" data-toggle="collapse" href="#headers" type="button"
-                aria-expanded="false" aria-controls="headers">
-                Headers
-              </button>
-              <div class="collapse show" id="headers">
-                <div class="card card-body">
-                  <!-- <div class="row">
-                        <div class="col-sm-12 col-md-2">
-                          key
-                        </div>
-                        <div class="col-sm-12 col-md-10">
-                          value
-                        </div>
-                      </div> -->
-                  <table class="table table-bordered" id="req_headers_table">
-                    <thead>
-                      <!-- <tr>
-                            <th scope="col" class="table_key">key</th>
-                            <th scope="col" class="table_value">value</th>
-                          </tr> -->
-                    </thead>
-                    <tbody id="headers_t_body">
-                      <tr>
-                        <th scope="row" class="table_key">
-                          <input class="form-control form-control-sm" id="header_key" type="text" placeholder="key">
-                        </th>
-                        <td class="table_value">
-                          <input class="form-control form-control-sm" id="header_value" type="text" placeholder="value">
-                        </td>
-                        <td class="table_delete">
-                          <a class="btn btn-outline-danger btn-sm" onclick="deleteRow(event,'headers_t_body')">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor"
-                              xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                              <path fill-rule="evenodd"
-                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                            </svg>
-                          </a>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <a class="btn btn-outline-success btn-block btn-sm" onclick="addMoreToTable('headers_t_body')">
-                    Add +
-                  </a>
-                  <hr>
-                </div>
-              </div>
-            </div>
-            <hr>
-            <div class="row row_block" id="response_block">
-              <button class="btn btn-primary btn-block btn-sm" data-toggle="collapse" href="#response" type="button"
-                aria-expanded="false" aria-controls="response">
-                Response
-              </button>
-              <div class="collapse" id="response">
-
-                <div class="card">
-                  <h5 class="card-header">RESPONSE</h5>
-                  <div class="card-body">
-                    <h5 class="card-title text-success" id="res_status"> 201</h5>
-                    <pre id="res_json"></pre>
-                    <a href="#" class="btn btn-primary">
-                      < Copy to Editor 1 </a>
-                        <a href="#" class="btn btn-primary">Copy to Editor 2 ></a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            </p>
           </div>
         </div>
-        <!-- <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Understood</button>
-          </div> -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-success share control" button-function="copy">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-files" fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd"
+                d="M4 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4z" />
+              <path
+                d="M6 0h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2v-1a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1H4a2 2 0 0 1 2-2z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="import" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Import</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="continer">
+            <div class="form-group">
+              <label for="import_text">Enter raw text</label>
+              <textarea class="form-control" id="import_text" rows="10"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-success share control" button-function="import">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-download" fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+            <path fill-rule="evenodd"
+              d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+          </svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -367,7 +234,8 @@
       <div class="modal-content">
         <div class="modal-body">
           <h1>About</h1>
-          <p>Version: <span id="version"></span> <span><a href="#" onclick="openChangeLog(event)">see changelog</a></span>
+          <p>Version: <span id="version"></span> <span><a href="#" onclick="openChangeLog(event)">see
+                changelog</a></span>
             <br><br>
           </p>
           <p>
@@ -378,27 +246,31 @@
             </b>
             is
             an offline tool to view, edit, and format JSON. It shows your data side by side in a clear, editable
-            treeview or a code editor. 
-            <span class="stike_throught" data-toggle="tooltip" data-placement="top" title="This will be available in the next release">
+            treeview or a code editor.
+            <span class="stike_throught" data-toggle="tooltip" data-placement="top"
+              title="This will be available in the next release">
               You can store documents locally.
             </span>
 
           </p>
           <h2>Report a bug</h2>
           <p>If you encounter a bug or have questions or suggestions for improvements, please report this at <a
-              href="https://github.com/AdityaRon1993/JsonEditorOffline/issues" target="_blank" class="button" onclick="openInExternalBrowser(event)"
+              href="https://github.com/AdityaRon1993/JsonEditorOffline/issues" target="_blank" class="button"
+              onclick="openInExternalBrowser(event)"
               rel="noopener noreferrer">https://github.com/AdityaRon1993/JsonEditorOffline/issues</a>.</p>
           <h2>Source code</h2>
           <p>The source code of the main component of this web application, JSONEditor, is open source. You can find it
-            at <a href="https://github.com/AdityaRon1993/JsonEditorOffline" target="_blank" class="button" onclick="openInExternalBrowser(event)"
+            at <a href="https://github.com/AdityaRon1993/JsonEditorOffline" target="_blank" class="button"
+              onclick="openInExternalBrowser(event)"
               rel="noopener noreferrer">https://github.com/AdityaRon1993/JsonEditorOffline</a>.</p>
           <h2>Data policy</h2>
           <p>No data is shared anywhere
           </p>
           <p>
-            Copyright © 2020 
-            <a href="https://www.linkedin.com/in/aditya-ron-adhikari-0914561a0/" class="button" onclick="openInExternalBrowser(event)" target="_blank"
-              rel="noopener noreferrer">Aditya Ron Adhikari</a></p>
+            Copyright © 2020
+            <a href="https://www.linkedin.com/in/aditya-ron-adhikari-0914561a0/" class="button"
+              onclick="openInExternalBrowser(event)" target="_blank" rel="noopener noreferrer">Aditya Ron Adhikari</a>
+          </p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -409,5 +281,3 @@
 </body>
 
 </html>
-
-

@@ -35,12 +35,6 @@ const createWindow = () => {
 app.on('ready', ()=>{
   createWindow();
   createmenu();
-  setTimeout(()=>{
-    api('https://jsonplaceholder.typicode.com/todos/1').then(res=>{
-      console.log("JSON PLACE HOLDER");
-      console.log(res)
-    })
-  },3000)
 // Modify the user agent for all requests to the following urls.
   const filter = {
     urls: []
@@ -314,7 +308,30 @@ ipcMain.handle("OPEN_CHANGE_LOG",()=>{
   }
   
 })
-
+//get shareable data
+ipcMain.handle('get_sharable_data', async (event, data) => {
+  const result = toBase64(JSON.stringify(data))
+  console.log(result)
+  return result
+})
+ipcMain.handle('get_decrypted_data', async (event, data) => {
+  try{
+    const result = toutf8(data);
+    const json = JSON.parse(result)
+   
+    console.log(result)
+    console.log(json)
+    return {
+      status : true,
+      json
+    }
+  }catch(e){
+    return {
+      status : false,
+      msg : `!! Wrong text shared !! \n Please put in the correct raw data`
+    }
+  }
+})
 //close childWindow
 ipcMain.handle("CLOSE_CHANGEL_LOG",()=>{
   try{
@@ -332,6 +349,15 @@ ipcMain.handle("CLOSE_CHANGEL_LOG",()=>{
 ipcMain.handle("GET_CHANGEL_LOG_DATA",()=>{
   return [...change_log]
 })
+
+
+function toBase64(str){
+  return Buffer.from(str, 'binary').toString('base64')
+}
+
+function toutf8(str){
+  return Buffer.from(str, 'base64').toString('utf8')
+}
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
