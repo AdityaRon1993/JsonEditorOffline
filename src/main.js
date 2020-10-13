@@ -177,7 +177,6 @@ function createmenu(){
       ] : 
       [
         { role: 'reload' },
-        { role: 'toggledevtools' },
         { role: 'forcereload' },
         { type: 'separator' },
         { role: 'resetzoom' },
