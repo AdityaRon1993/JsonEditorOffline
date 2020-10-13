@@ -9,7 +9,7 @@ const { shell, ipcMain } = require('electron') // used in HTML
 const req_sample = $('#req_t_body').html()
 const {ipcRenderer} = require('electron')
 class MyEmitter extends EventEmitter { }
-const { clipboard } = require('electron')
+const { clipboard } = require('electron');
 
 
 let user_data = null;
@@ -96,8 +96,8 @@ controls.forEach(ele => {
                 (async()=>{
                     if(json_err) {alert('there is an error in any of the JSONs'); return}
                     const data_arg = {
-                        editor_one : { name : "one" ,data : editor_one.get()},
-                        editor_two : { name : "two" ,data : editor_two.get()}
+                        editor_one : { name : $("#editor_name_one").val() || "one",data : editor_one.get()},
+                        editor_two : { name : $("#editor_name_two").val() || "two" ,data : editor_two.get()}
                     }
                     const share_data = await ipcRenderer.invoke('get_sharable_data',data_arg)
                     $("#data_share").html(share_data)
@@ -111,8 +111,14 @@ controls.forEach(ele => {
                     if(data == "") { alert("Please Enter some data"); return;}
                     const share_data = await ipcRenderer.invoke('get_decrypted_data',data)
                     if(share_data.status){
-                        editor_one.set(share_data.json.editor_one.data)
-                        editor_two.set(share_data.json.editor_two.data)
+                        if(share_data.json.editor_one){
+                            editor_one.set(share_data.json.editor_one.data)
+                            $("#editor_name_one").val(share_data.json.editor_one.name || "")
+                        }
+                        if(share_data.json.editor_two){
+                            editor_two.set(share_data.json.editor_two.data)
+                            $("#editor_name_two").val(share_data.json.editor_two.name || "")
+                        }
                         $("#import_text").val('');
                         $('#import').modal('hide')
                     }else{
@@ -384,8 +390,8 @@ save_json.forEach(ele=>{
 
 async function save_json_to_file(data){
     const res = await ipcRenderer.invoke("SAVE_JSON_DATA", data);
-    const user_data = await getuserData()
-    console.log(user_data)
+    const user_data_local= await getuserData()
+    console.log(user_data_local)
 }
 
 
@@ -405,20 +411,81 @@ async function getuserData (){
     renderMultiple(res.multiple_json)
     Array.from(document.querySelectorAll("#share")).forEach(ele=>{
         $(ele).on('click',function(){
-            console.log("share")
+            const index = $(this).attr("data-index")
+            const type = $(this).attr("data-type")
+            try{
+                const concerned_data = user_data[type][index]
+                const editor1 =  concerned_data.filter(e=>e.editor == "1")
+                const editor2 =  concerned_data.filter(e=>e.editor == "2")
+                let data_arg = {}
+                if(editor1.length > 0){
+                    data_arg.editor_one = {
+                        name : editor1[0].name,
+                        data : editor1[0].json
+                    }
+                }
+                if(editor2.length > 0){
+                    data_arg.editor_two = {
+                        name : editor2[0].name,
+                        data : editor2[0].json
+                    }
+                }
+                (async()=>{
+                    const share_data = await ipcRenderer.invoke('get_sharable_data',data_arg)
+                    $("#data_share").html(share_data)
+                    $('#share_data').modal('show')
+                })()
+            }catch(e){
+                alert("Something went wrong")
+            }
         })
     })
     Array.from(document.querySelectorAll("#show")).forEach(ele=>{
         $(ele).on('click',function(){
-            console.log("show")
+            const index = $(this).attr("data-index")
+            const type = $(this).attr("data-type")
+            try{
+                const concerned_data = user_data[type][index]
+                console.log(concerned_data)
+                concerned_data.forEach(ele=>{
+                    if(ele.editor === "1"){
+                        editor_one.set(ele.json)
+                        $("#editor_name_one").val(ele.name)
+                    }else{
+                        editor_two.set(ele.json)
+                        $("#editor_name_two").val(ele.name)
+                    }
+                })
+                $("#cross").click()
+            }catch(e){
+                alert("Something went wrong")
+            }
+
         })
     })
     Array.from(document.querySelectorAll("#delete")).forEach(ele=>{
         $(ele).on('click',function(){
             console.log("delete")
+            const index = $(this).attr("data-index")
+            const type = $(this).attr("data-type")
+            param = {index,type}
+           deleteData(param).then(da=>{
+               console.log(da)
+           })
         })
     })
     return res
+}
+
+async function deleteData(param){
+    try{
+        const _res = await ipcRenderer.invoke("DELETE_JSON_DATA", param);
+        console.log(_res);
+        await getuserData()
+        return true
+    }catch(e){
+        return false
+    }
 }
 function renderSingle(data){
     const tr = []
@@ -428,13 +495,14 @@ function renderSingle(data){
             <tr>
                 <td scope="row">${i+1}</td>
                 <td> ${ele[0].name} </td>
+                <td> EDITOR-${ele[0].editor}</td>
                 <td> 
-                    <button type="button" class="btn btn-outline-primary btn-sm" id="show" data-type="single" data-index="${i}" data-work="show"  >
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="show" data-type="single_json" data-index="${i}" data-work="show"  >
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-bar-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8zm-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5z"/>
                         </svg>
                     </button> 
-                    <button type="button" class="btn btn-outline-secondary btn-sm" id="share" data-type="single" data-index="${i}" data-work="share"  >
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="share" data-type="single_json" data-index="${i}" data-work="share"  >
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-share-fill" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd"
@@ -443,7 +511,7 @@ function renderSingle(data){
                     </button> 
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-sm" id="delete" data-type="single" data-index="${i}" data-work="delete"  >
+                    <button type="button" class="btn btn-danger btn-sm" id="delete" data-type="single_json" data-index="${i}" data-work="delete"  >
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
@@ -460,6 +528,7 @@ function renderSingle(data){
     <thead>
         <th scope="col">#</th>
         <th scope="col">Editor Name</th>
+        <th scope="col"> Origin </th>
         <th scope="col" colspan=2>Action</th>
     </thead>
     <tbody>
@@ -479,12 +548,12 @@ function renderMultiple(data){
                 <td> ${ele[0].name} </td>
                 <td> ${ele[1].name} </td>
                 <td> 
-                    <button type="button" class="btn btn-outline-primary btn-sm" id="show" data-type="multiple" data-index="${i}" data-work="show"  >
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="show" data-type="multiple_json" data-index="${i}" data-work="show"  >
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-bar-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8zm-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5z"/>
                         </svg>
                     </button> 
-                    <button type="button" class="btn btn-outline-secondary btn-sm" id="share" data-type="multiple" data-index="${i}" data-work="share"  >
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="share" data-type="multiple_json" data-index="${i}" data-work="share"  >
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-share-fill" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd"
@@ -493,7 +562,7 @@ function renderMultiple(data){
                     </button> 
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-sm" id="delete" data-type="single" data-index="${i}" data-work="delete"  >
+                    <button type="button" class="btn btn-danger btn-sm" id="delete" data-type="multiple_json" data-index="${i}" data-work="delete"  >
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
