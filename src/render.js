@@ -13,7 +13,7 @@ const { clipboard } = require('electron');
 
 
 let user_data = null;
-getuserData().then(res=>{
+getuserData(true).then(res=>{
     console.log(res)
 })
 
@@ -396,12 +396,13 @@ save_json.forEach(ele=>{
 
 async function save_json_to_file(data){
     const res = await ipcRenderer.invoke("SAVE_JSON_DATA", data);
+    console.log(res)
     const user_data_local= await getuserData()
     console.log(user_data_local)
 }
 
 
-async function getuserData (){
+async function getuserData (first= false){
     Array.from(document.querySelectorAll("#share")).forEach(ele=>{
         $(ele).off()
     })
@@ -411,7 +412,7 @@ async function getuserData (){
     Array.from(document.querySelectorAll("#delete")).forEach(ele=>{
         $(ele).off()
     })
-    const res = await ipcRenderer.invoke("GET_SAVED_DATA");
+    const res = await ipcRenderer.invoke("GET_SAVED_DATA",first);
     user_data = res
     renderSingle(res.single_json)
     renderMultiple(res.multiple_json)

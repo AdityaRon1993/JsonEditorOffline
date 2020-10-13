@@ -1,7 +1,7 @@
 {
   "name": "json-offline-editor",
   "productName": "JSON Offline Editor",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Re-format and get compare jsons\n Api and user data is comming soon",
   "main": "src/main.js",
   "scripts": {

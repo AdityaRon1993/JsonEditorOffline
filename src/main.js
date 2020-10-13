@@ -1,9 +1,8 @@
-const { app, Menu, BrowserWindow, Tray,ipcMain , dialog , session} = require('electron');
+const { app, Menu, BrowserWindow,ipcMain} = require('electron');
 const path = require('path');
-const api = require('request-promise')
 const fs = require("fs")
 const change_log = require("./changeLog/change_log.json");
-const user_data_path = path.join(__dirname,"assets","user_data.json")
+let user_data_path = path.join(__dirname,"assets","user_data.json")
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
@@ -34,6 +33,7 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', ()=>{
+  defaultFolder()
   createWindow();
   createmenu();
 // Modify the user agent for all requests to the following urls.
@@ -52,6 +52,24 @@ app.on('ready', ()=>{
   // })
 
 });
+
+function defaultFolder(){
+    const path_to_default = path.join(defaultPathToSaveFiles,"JSON_OFFLINE_EDITOR")
+    const isthere = fs.existsSync(path_to_default)
+    if(!isthere){
+      fs.mkdirSync(path_to_default)
+    }
+    const path_to_file = path.join(path_to_default,"user_data.json")
+    const isThere_file = fs.existsSync(path_to_file);
+    if(!isThere_file){
+      const default_json = {
+        "single_json" : [],
+        "multiple_json" : []
+    }
+      fs.writeFileSync(path_to_file,JSON.stringify(default_json))
+    }
+    user_data_path = path_to_file
+}
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -159,6 +177,7 @@ function createmenu(){
       ] : 
       [
         { role: 'reload' },
+        { role: 'toggledevtools' },
         { role: 'forcereload' },
         { type: 'separator' },
         { role: 'resetzoom' },
@@ -256,7 +275,10 @@ function writeUserData(data){
 //open changeLog
 
 
-ipcMain.handle("GET_SAVED_DATA", async(event)=>{
+ipcMain.handle("GET_SAVED_DATA", async(event,arg)=>{
+  if(arg){
+    defaultFolder()
+  }
   const user_data = JSON.parse(await getUserData());
   return user_data
 })
