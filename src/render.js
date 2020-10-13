@@ -69,12 +69,18 @@ let diffE = (event) => {
 
 let getDiff = ()=>{
     if (!json_err) {
-        colourEditor(editor_one, diff(editor_one.get(), editor_two.get()))
-        colourEditor(editor_two, diff(editor_two.get(),editor_one.get()))
-        const no_of_diff = diff(editor_one.get(),editor_two.get()).filter(ele=>ele.lhs).length
-        $("#error_number").html(no_of_diff) 
-        if(no_of_diff > 1){
-            $("#multiple").html('s')
+        try{
+            colourEditor(editor_one, diff(editor_one.get(), editor_two.get()))
+            colourEditor(editor_two, diff(editor_two.get(),editor_one.get()))
+            const no_of_diff = diff(editor_one.get(),editor_two.get()).filter(ele=>ele.lhs).length
+            $("#error_number").html(no_of_diff) 
+            if(no_of_diff > 1){
+                $("#multiple").html('s')
+            }
+        }catch(e){
+            $("#error_number").html('') 
+            $("#multiple").html('')
+            alert("Difference cannot be determined")
         }
     }
 }
