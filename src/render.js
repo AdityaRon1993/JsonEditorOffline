@@ -335,7 +335,8 @@ ipcRenderer.on("GET_JSON_DATA", (event, data) => {
     const editor_name_one = $("#editor_name_one").val().trim();
     const editor_name_two = $("#editor_name_two").val().trim();
     if(editor_name_one == "" || editor_name_one.length == 0 || editor_name_two == "" || editor_name_two.length == 0){
-        alert("Name for editor one and two are compulsory")
+        alert("Name for editor one and two are compulsory");
+        return;
     }
     const sendData = {
         id : Date.now(),
@@ -397,6 +398,9 @@ save_json.forEach(ele=>{
 async function save_json_to_file(data){
     const res = await ipcRenderer.invoke("SAVE_JSON_DATA", data);
     console.log(res)
+    if(res){
+        alert("JSON SAVED SUCCESSFULLY")
+    }
     const user_data_local= await getuserData()
     console.log(user_data_local)
 }
