@@ -211,8 +211,28 @@ ipcMain.handle('SAVE_JSON_DATA', async (event, args) => {
     console.log(succ)
   }catch(e){
     console.log(e)
+    return false
   }
-  return "done"
+  return true
+})
+
+ipcMain.handle('DELETE_JSON_DATA', async (event, args) => {
+  console.log(args)
+  let user_data
+  try{
+    user_data= JSON.parse(await getUserData());
+    console.log(user_data)
+    const {index,type} = args;
+    const backup_type = user_data[type]
+    backup_type.splice(index,1)
+    user_data[type] = [...backup_type]
+    const succ = await writeUserData(JSON.stringify(user_data))
+    console.log(succ)
+  }catch(e){
+    console.log(e)
+    return false
+  }
+  return true
 })
 
 function getUserData(){
