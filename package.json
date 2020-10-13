@@ -32,7 +32,7 @@
       "target": "msi"
     },
     "linux": {
-      "target": "deb"
+      "target": "AppImage"
     }
   },
   "dependencies": {
