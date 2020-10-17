@@ -17,6 +17,11 @@ getuserData(true).then(res=>{
     console.log(res)
 })
 
+$('.toast').toast({
+    animation : true,
+    autohide: true,
+    delay : 5000
+})
 
 const myEmitter = new MyEmitter();
 myEmitter.on('json_error', () => {
@@ -399,7 +404,8 @@ async function save_json_to_file(data){
     const res = await ipcRenderer.invoke("SAVE_JSON_DATA", data);
     console.log(res)
     if(res){
-        alert("JSON SAVED SUCCESSFULLY")
+        // alert("JSON SAVED SUCCESSFULLY")
+        showToaster("JSON SAVED", "JSON SAVED SUCCESSFULLY")
     }
     const user_data_local= await getuserData()
     console.log(user_data_local)
@@ -619,3 +625,20 @@ function copyToClipboard(elem) {
 }
 
 // https://github.com/josdejong/jsoneditor/issues/603
+
+
+function showToaster(title, body, status){
+    let class_body = "bg-danger text-white";
+    let class_title = "bg-danger text-white"
+    switch(status){
+        case "fail" : 
+            $(".toast-header").addClass(class_title)
+            $(".toast-body").addClass(class_body)
+
+    }
+    $(".toast-header").removeClass(class_title)
+    $(".toast-body").removeClass(class_body)
+    $("#toaster_title").html(title)
+    $("#toaster_body").html(body)
+    $('.toast').toast("show")
+}
