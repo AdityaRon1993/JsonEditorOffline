@@ -63,7 +63,8 @@
       "changes": [
         "Share import functionality added",
         "JSONs can be saved, retrived and deleted",
-        "single json and multiple json save support"
+        "single json and multiple json save support",
+        "Toaster Added"
       ],
       "future": [
         "default folder to be changed to documents so that data is not lost"
