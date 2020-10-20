@@ -20,12 +20,13 @@ getuserData(true).then(res=>{
 $('.toast').toast({
     animation : true,
     autohide: true,
-    delay : 5000
+    delay : 8000
 })
 
 const myEmitter = new MyEmitter();
 myEmitter.on('json_error', () => {
-    alert("CANNOT FIND DIFF IF JSON HAS ERROR")
+    // alert("CANNOT FIND DIFF IF JSON HAS ERROR")
+    showToaster("!! ERROR !!" , "CANNOT FIND DIFF IF JSON HAS ERROR" )
 });
 
 const editor1 = document.getElementById("editor")
@@ -85,7 +86,8 @@ let getDiff = ()=>{
         }catch(e){
             $("#error_number").html('') 
             $("#multiple").html('')
-            alert("Difference cannot be determined")
+            // alert("Difference cannot be determined")
+           showToaster("!! ERROR !!" , "Difference cannot be determined" )
         }
     }
 }
@@ -105,7 +107,11 @@ controls.forEach(ele => {
                 break;
             case "share":
                 (async()=>{
-                    if(json_err) {alert('there is an error in any of the JSONs'); return}
+                    if(json_err) {
+                        // alert('there is an error in any of the JSONs'); 
+                        showToaster("!! ERROR !!" , "There is an error in any of the JSONs" )
+                        return
+                    }
                     const data_arg = {
                         editor_one : { name : $("#editor_name_one").val() || "one",data : editor_one.get()},
                         editor_two : { name : $("#editor_name_two").val() || "two" ,data : editor_two.get()}
@@ -119,7 +125,11 @@ controls.forEach(ele => {
                 (async()=>{
                     const data = $("#import_text").val().trim()
                     console.log(data)
-                    if(data == "") { alert("Please Enter some data"); return;}
+                    if(data == "") { 
+                        // alert("Please Enter some data"); 
+                        showToaster("!! ERROR !!" , "Please Enter some data" )
+                        return;
+                    }
                     const share_data = await ipcRenderer.invoke('get_decrypted_data',data)
                     if(share_data.status){
                         if(share_data.json.editor_one){
@@ -133,7 +143,8 @@ controls.forEach(ele => {
                         $("#import_text").val('');
                         $('#import').modal('hide')
                     }else{
-                        alert(share_data.msg)
+                        // alert(share_data.msg)
+                        showToaster("!! Anonymous !!" , share_data.msg )
                     }
                     console.log(share_data)
                 })()
@@ -148,10 +159,12 @@ controls.forEach(ele => {
             case "copy":
                 const success = copyToClipboard("#data_share")
                 if(success) {return}
-                alert("Failed to copy")
+                // alert("Failed to copy")
+                showToaster("!! ERROR !!" , "Failed to COPY" )
                 break;
             default:
-                alert("SOMETHING WENT WRONG")
+                // alert("SOMETHING WENT WRONG")
+                showToaster("!! ERROR !!" , "SOMETHING WENT WRONG" )
 
         }
     })
@@ -179,7 +192,8 @@ function addMoreToTable(id) {
 
 function deleteRow(event, id) {
     if (checkForLastRow(id)) {
-        alert("You cannot delete the last row");
+        // alert("You cannot delete the last row");
+        showToaster("!! WARNING !!" , "YOU CANNOT DELETE THE LAST ROW" )
         return;
     }
     $(event.target).closest("tr").remove();
@@ -331,16 +345,22 @@ const openInExternalBrowser = (event)=>{
     try{
         shell.openExternal(externalUrl)
     }catch(e){
-        alert('cannot open ', externalUrl)
+        // alert('cannot open ', externalUrl)
+        showToaster("!! ERROR !!" , "CANNOT OPEN - ",externalUrl )
     }
 }
 ipcRenderer.on("GET_JSON_DATA", (event, data) => {
     console.log(data);
-    if(json_err) { alert("!! JSON has error !!\n!! Please resolve the error !!"); return;}
+    if(json_err) { 
+        // alert("!! JSON has error !!\n!! Please resolve the error !!"); 
+        showToaster("!! ERROR !!" , "!! JSON has error !!\n!! Please resolve the error !!" )
+        return;
+    }
     const editor_name_one = $("#editor_name_one").val().trim();
     const editor_name_two = $("#editor_name_two").val().trim();
     if(editor_name_one == "" || editor_name_one.length == 0 || editor_name_two == "" || editor_name_two.length == 0){
-        alert("Name for editor one and two are compulsory");
+        // alert("Name for editor one and two are compulsory");
+        showToaster("!! INFO !!" , "!Name for editor one and two are compulsory" )
         return;
     }
     const sendData = {
@@ -371,10 +391,15 @@ save_json.forEach(ele=>{
         const attr = $(this).parent().parent().find(".editor_name").attr("data-editor")
         let json = null;
         if(name == "" || name.length == 0) {
-            alert("Name is needed")
+            // alert("Name is needed")
+            showToaster("!! INFO !!" , "EDITOR NAME IS REQUIRED" )
             return;
         }
-        if(json_err){ alert("!! JSON has error !!\n!! Please resolve the error !!"); return;}
+        if(json_err){ 
+            // alert("!! JSON has error !!\n!! Please resolve the error !!"); 
+            showToaster("!! ERROR !!" , "!! JSON has error !!\n!! Please resolve the error !!" )
+            return;
+        }
         switch(attr){
             case "1" : 
                 json = editor_one.get(); 
@@ -453,7 +478,8 @@ async function getuserData (first= false){
                     $('#share_data').modal('show')
                 })()
             }catch(e){
-                alert("Something went wrong")
+                // alert("Something went wrong")
+                showToaster("!! ERROR !!" , "Something went wrong" )
             }
         })
     })
@@ -475,7 +501,8 @@ async function getuserData (first= false){
                 })
                 $("#cross").click()
             }catch(e){
-                alert("Something went wrong")
+                // alert("Something went wrong")
+                showToaster("!! ERROR !!" , "Something went wrong" )
             }
 
         })
@@ -627,17 +654,7 @@ function copyToClipboard(elem) {
 // https://github.com/josdejong/jsoneditor/issues/603
 
 
-function showToaster(title, body, status){
-    let class_body = "bg-danger text-white";
-    let class_title = "bg-danger text-white"
-    switch(status){
-        case "fail" : 
-            $(".toast-header").addClass(class_title)
-            $(".toast-body").addClass(class_body)
-
-    }
-    $(".toast-header").removeClass(class_title)
-    $(".toast-body").removeClass(class_body)
+function showToaster(title, body){
     $("#toaster_title").html(title)
     $("#toaster_body").html(body)
     $('.toast').toast("show")
